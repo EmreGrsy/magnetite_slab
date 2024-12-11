@@ -13,7 +13,7 @@ This repository provides computational workflows and analysis scripts used in th
 ```
 magnetite_slavb/
 │
-├── 220510_001_DBT_annealing_scheme_comparison/        # Comparison of different annealing schemes
+├── 220510_001_DBT_annealing_scheme_comparison/       # Comparison of different annealing schemes
 │
 ├── 220815_001_111_DBT_001_SCV_comparison/            # Modeling different surface terminations
 │   ├── 1_OO1_DBT/                                     
