@@ -43,3 +43,22 @@ magnetite_slavb/
 │ 
 └── README.md                                         
 ```
+
+## Related Publications  
+If you use this repository, please cite the original paper:  
+```bibtex
+@article{Grsoy2023,
+  title = {Oxidation-State Dynamics and Emerging Patterns in Magnetite},
+  volume = {14},
+  ISSN = {1948-7185},
+  url = {http://dx.doi.org/10.1021/acs.jpclett.3c01290},
+  DOI = {10.1021/acs.jpclett.3c01290},
+  number = {30},
+  journal = {The Journal of Physical Chemistry Letters},
+  publisher = {American Chemical Society (ACS)},
+  author = {G\"{u}rsoy,  Emre and Vonbun-Feldbauer,  Gregor B. and Meißner,  Robert H.},
+  year = {2023},
+  month = jul,
+  pages = {6800–6807}
+}
+```
