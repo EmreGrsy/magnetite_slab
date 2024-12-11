@@ -11,7 +11,7 @@ This repository provides computational workflows and analysis scripts used in th
 
 ## Repository Structure  
 ```
-magnetite_slavb/
+magnetite_slab/
 │
 ├── 220510_001_DBT_annealing_scheme_comparison/       # Comparison of different annealing schemes
 │
