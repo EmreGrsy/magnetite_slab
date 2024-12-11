@@ -20,7 +20,7 @@ magnetite_slavb/
 │   ├── 2_111_tet1/                                  
 │   ├── 3_001_SCV/                                   
 │   ├── 4_analysis/                                   # Data analysis scripts
-│   ├── 5_benchmark_slurm/                            # Computational efficiency of Slurm
+│   ├── 5_benchmark_slurm/                            # Core usage scaling in SLURM
 │
 ├── 220906_001_DBT_linear_exp_comparison/             # Annealing scheme comparison
 │   ├── 1_linear/                                     # Linear temperature decay
@@ -41,5 +41,5 @@ magnetite_slavb/
 │   ├── 2_surface13L-21L-29L_bulk24L/                 # Multiple surface/bulk configurations
 │   ├── gen_slab/                                     # 001-DBT slab generation scripts
 │ 
-└── README.md                                         # Repository documentation
+└── README.md                                         
 ```
