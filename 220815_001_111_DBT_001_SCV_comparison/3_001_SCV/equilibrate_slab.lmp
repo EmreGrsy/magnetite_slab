@@ -1,0 +1,61 @@
+variable layer index 17
+variable temp index 200000 180000 162000 145800 131220 118098 106288 95659 86093 77483 69734 62760 56484 50835 45751 41175 37057 33351 30015 27013 24311 21879 19691 17721 15948 14353 12917 11625 10462 9415 8473 7625 6862 6175 5557 5001 4500 4050 3645 3280 2952 2656 2390 2151 1935 1741 1566 1409 1268 1141 1026 923 830 747 672 604 543 488 439 395 355 319 287 258 232 208 187 168 151 135 121 108 97 87 78 70 63 56 50 45 40 36 32 28 25 22 19 17 15 13 11 9 8 7 6 5 4 3 2 1
+
+variable rand equal round(random(0,1e7,452345))
+
+include settings.lmp
+
+read_data 001-scv_3x3_17L.data
+
+#include  ff_formic_acid_fe304.param
+
+dump  dmp all custom 10000 swap_${layer}L.lammpstrj id mol type q x y z
+dump_modify dmp sort id
+
+group  fe type 1 2
+variable nfe equal count(fe)
+variable nsteps equal (${nfe}/2)*(${nfe}/2)
+
+compute  coord fe coord/atom cutoff 2.0
+dump coord  fe custom 1 fe_${layer}L.coord id type c_coord
+dump_modify  coord sort id
+run  0
+variable  fet atom c_coord==4
+group  fet variable fet
+group  feo subtract fe fet
+undump  coord
+
+set  group all mol 0
+set  group fet mol 1
+set  group feo mol 2
+
+variable  fet3 atom "gmask(fet) && q == 1.575"
+group  fet3 dynamic fe var fet3 every 100
+variable  rfet3 equal count(fet3)/count(fet)
+
+variable  feo3 atom "gmask(feo) && q == 1.575"
+group  feo3 dynamic fe var feo3 every 100
+variable  rfeo3 equal count(feo3)/count(feo)
+
+variable cnum equal 100  # Number of SA cycles 
+
+label temp_loop
+
+  variable ftemp equal v_temp
+
+  # Electrostatic relaxation-long
+  fix  swp fe atom/swap 1 1 ${rand} ${temp} ke no types 1 2
+  thermo  1000
+  thermo_style custom step v_ftemp v_cnum pe f_swp[1] f_swp[2] v_rfet3 v_rfeo3  
+  run ${nsteps}
+
+  variable cnum equal (${cnum}-1)
+
+  unfix swp
+
+next temp
+jump SELF temp_loop
+label break
+
+thermo_style custom step temp pe
+write_data 001-scv-${layer}L_swp.data

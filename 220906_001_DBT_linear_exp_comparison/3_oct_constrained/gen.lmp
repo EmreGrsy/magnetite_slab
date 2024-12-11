@@ -1,0 +1,60 @@
+variable layer index 17 21 25 29 33 37 41
+variable q2 equal 1.050 # charge of Fe(II)
+variable q3 equal 1.575 # charge of Fe(III)
+
+label loop
+
+	variable no index 0 1 2 3 4 5 6 7 8 9
+	
+	label loop2
+
+		variable rand equal round(random(0,1e7,3${no}3345))	
+		include settings.lmp
+		
+		read_data 001-dbt_3x3_${layer}L.data
+	
+		dump dmp all custom 1000 swap.lammpstrj id mol type q x y z
+		dump_modify dmp sort id
+		
+		group Fe type 6 7
+		
+		compute coord Fe coord/atom cutoff 2.0
+		dump coord Fe custom 1 fe.coord id type c_coord
+		dump_modify coord sort id
+		run  0
+		variable FeT atom c_coord==4
+		group FeT variable FeT
+		group FeO subtract Fe FeT
+		undump coord
+		
+		set group FeO type 1
+		set group FeT type 3
+		group O type 8
+		variable nFeO equal count(FeO)
+		variable nFeT equal count(FeT)
+		variable nO equal count(O)
+		
+		variable r equal ${nFeO}-round(${nFeO}*(${nFeT}*${q3}+${nFeO}*${q3}-${nO}*${q2})/(${nFeO}*${q3}-${nFeO}*${q2}))
+		
+		# reset all charges of FeO to Fe(II) (1.050e)
+		set type 1 charge ${q2}
+		
+		# ... and set some random subset of FeO 
+		set group FeO type/subset 2 $r ${rand}
+		
+		#and all FeT to Fe(III) (1.575e)
+		set type 2 charge ${q3}
+		set type 3 charge ${q3}
+		
+		variable ch equal charge(all)
+		print "total chage of the system: ${ch}"
+		
+		write_data ${layer}L/001-dbt_3x3_${layer}L_oct_${no}.data
+	
+		clear
+
+	next no
+	jump SELF loop2
+
+next layer
+jump SELF loop

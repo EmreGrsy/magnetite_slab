@@ -1,0 +1,23 @@
+variable layer index 41
+variable rand equal round(random(0,1e7,452345))
+include settings.lmp
+
+label loop1
+
+ read_data 001-dbt_3x3_${layer}L_swp.data
+ 
+ include ff_formic_acid_fe304.param
+ 
+ group fe type 7 6
+ 
+ # Full minimization
+ minimize 1.0e-6 1.0e-9 1000 10000
+ 
+ compute pe all pe
+ fix print_pe all ave/time 1 1 1 c_pe file pe_${layer}L.temp off 1
+ run 0
+ unfix print_pe
+
+next layer
+jump SELF loop1
+label break

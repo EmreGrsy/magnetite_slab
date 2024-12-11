@@ -1,0 +1,94 @@
+variable rep equal 8 # needs to be even number ...
+
+variable ulayer equal 9 # 9 is number of layers in unit cell
+variable max equal ceil(((${rep}-1.5)*${ulayer})/2)
+variable n loop 0 ${max}
+variable rand equal round(random(0,1e7,452345))
+variable q2 equal 1.050 # charge of Fe(II)
+variable q3 equal 1.575 # charge of Fe(III)
+
+variable dz equal 2.12 # z-distance between FeT
+variable offset equal 0.1 # offset for deleting atoms 
+
+shell rm pe.dat
+print "# pe area atoms" file pe.dat screen no
+
+label loop
+
+  units           real
+  processors      * * 1
+  atom_style      full
+  boundary        p p p
+  kspace_style    pppm 1e-6
+
+  # modified CLAYFF parameters from Kerisit (2011)
+  pair_style      lj/cut/coul/long 8.0 12.0
+
+  read_data       mFd3m.data 
+  
+  replicate       3 3 ${rep}
+  
+  variable        layer equal ${rep}*${ulayer}-($n+1)*2-7
+  
+  variable        xhi equal lx
+  variable        yhi equal ly
+  variable        zhi equal lz 
+  
+  change_box      all x final 0.0 ${xhi} &
+                      y final 0.0 ${yhi} &
+                      z final 0.0 ${zhi} &
+                      boundary p p f remap &
+                      units box 
+  
+  kspace_modify   slab 3.0     
+  
+  # remove upper FeT layer
+  variable zmax equal bound(all,zmax)
+  variable zdel equal ${zmax}-${offset}-$n*${dz}
+  region del block INF INF INF INF ${zdel} INF units box
+  delete_atoms region del
+  
+  group Fe type 1 2
+  group FeO type 1
+  group FeT type 2
+  group O type 3
+  variable nFeO equal count(FeO)
+  variable nFeT equal count(FeT)
+  variable nO equal count(O)
+                 
+  # %10 vacany from octahedral
+  variable oct_vac equal round(${nFeO}/20)
+  set group FeO type/subset 4 ${oct_vac} ${rand}
+
+  # %10 vacany from tetrahedral
+  variable tet_vac equal round(${nFeT}/20)
+  set group FeT type/subset 4 ${tet_vac} ${rand}
+
+  set type 4 charge 0.0
+
+  group Fe delete
+  group FeO delete
+  group FeT delete
+  group O delete
+
+  group Fe type 1 2
+  group FeO type 1
+  group FeT type 2
+  group O type 3
+  variable nFeO equal count(FeO)
+  variable nFeT equal count(FeT)
+  variable nO equal count(O)
+
+  variable r equal ${nFeO}-round(${nFeO}*(${nFeT}*${q3}+${nFeO}*${q3}-${nO}*${q2})/(${nFeO}*${q3}-${nFeO}*${q2}))
+  # reset all charges of FeO to Fe(II) (1.050e)
+  set type 1 charge ${q2}
+  # ... and set some random subset of FeO and all FeT to Fe(III) (1.575e)
+  set group FeO type/subset 2 $r ${rand}
+  set type 2 charge  ${q3}               
+                 
+  write_data      001-dbt_3x3_${layer}L.data
+  
+  clear
+  
+next n
+jump SELF loop

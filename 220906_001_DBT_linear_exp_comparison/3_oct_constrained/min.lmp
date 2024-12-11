@@ -1,0 +1,28 @@
+variable layer1 index 17 21 25 29 33 37 41 
+
+label loop
+
+	variable no1 index 0 1 2 3 4 5 6 7 8 9
+
+	label loop2
+
+		include settings.lmp
+	
+		variable no equal v_no1
+		variable layer equal v_layer1
+		
+		read_data ${layer}L/001-dbt_3x3_${layer}L_oct_${no}.data
+		
+		minimize 1.0e-6 1.0e-9 1000 10000
+	
+		compute pe all pe
+	 	fix print_pe all ave/time 1 1 1 v_layer v_no c_pe file pe_${layer}L_min_${no}.txt off 1
+		run 0
+		unfix print_pe
+		
+		clear
+	next no1
+	jump SELF loop2
+
+next layer1
+jump SELF loop

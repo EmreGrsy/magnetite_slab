@@ -1,0 +1,179 @@
+LAMMPS (17 Feb 2022)
+variable        q1 equal 1.050  # Charge of Fe(II).
+variable        q2 equal 1.575  # Charge of Fe(III).
+variable        q3 equal -1.050  # Charge of O.
+
+variable        rand equal round(random(0,1e7,452345))
+
+include		settings.lmp
+units              real
+atom_style         full
+timestep	   0.5
+boundary	   p p f
+
+pair_style         lj/cut/coul/long 12.0
+bond_style         harmonic
+angle_style        harmonic
+dihedral_style     fourier
+improper_style     cvff
+kspace_style       pppm 1.0e-6
+kspace_modify      slab 3.0
+
+pair_modify        mix arithmetic
+special_bonds      amber
+neighbor           2.0 bin
+neigh_modify       every 1 delay 0 check yes
+
+read_data	a-001-scv-53.data
+Reading data file ...
+  orthogonal box = (-4.132299 -4.120963 -27.980077) to (21.303832 20.957004 87.100077)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  3366 atoms
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0.5     
+  special bond factors coul:  0        0        0.8333333333333334
+     0 = max # of 1-2 neighbors
+     0 = max # of 1-3 neighbors
+     0 = max # of 1-4 neighbors
+     1 = max # of special neighbors
+  special bonds CPU = 0.000 seconds
+  read_data CPU = 0.005 seconds
+
+group		del type 4
+1512 atoms in group del
+delete_atoms	group del
+WARNING: Ignoring 'compress yes' for molecular system (../delete_atoms.cpp:126)
+Deleted 1512 atoms, new total = 1854
+
+mass		1 55.845
+mass		2 55.845
+mass		3 15.994
+mass		4 11
+
+pair_coeff	1 1 9.0298e-07  4.90620
+pair_coeff	2 2 9.0298e-07  4.90620
+pair_coeff	3 3 0.1554      3.16554
+pair_coeff	4 4 0 0
+
+# Shift the bottom region to connect to upper region
+region		btm block INF INF INF INF INF 18
+group		btm region btm
+981 atoms in group btm
+displace_atoms	btm move 0 0 25.44 units box
+Displacing atoms ...
+
+reset_atom_ids sort yes
+Resetting atom IDs ...
+PPPM initialization ...
+WARNING: System is not charge neutral, net charge = -17.85 (../kspace.cpp:325)
+  using 12-bit tables for long-range coulomb (../kspace.cpp:340)
+  G vector (1/distance) = 0.28985911
+  grid = 40 40 270
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00036398293
+  estimated relative force accuracy = 1.0961238e-06
+  using double precision KISS FFT
+  3d grid and FFT values/proc = 655473 432000
+  generated 6 of 6 mixed pair_coeff terms from arithmetic mixing rule
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 14
+  ghost atom cutoff = 14
+  binsize = 7, bins = 4 4 17
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut/coul/long, perpetual
+      attributes: half, newton on
+      pair build: half/bin/newton
+      stencil: half/bin/3d
+      bin: standard
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0.5     
+  special bond factors coul:  0        0        0.8333333333333334
+     0 = max # of 1-2 neighbors
+     0 = max # of 1-3 neighbors
+     0 = max # of 1-4 neighbors
+     1 = max # of special neighbors
+  special bonds CPU = 0.000 seconds
+
+# Redistribute atomic charges
+
+group		Fe type 1 2
+774 atoms in group Fe
+group		O type 3
+1080 atoms in group O
+variable	nFe equal count(Fe)
+variable	nO equal count(O)
+
+variable	nFe_3 equal (${q1}*(${nO}-${nFe}))/(${q2}-${q1})
+variable	nFe_3 equal (1.05*(${nO}-${nFe}))/(${q2}-${q1})
+variable	nFe_3 equal (1.05*(1080-${nFe}))/(${q2}-${q1})
+variable	nFe_3 equal (1.05*(1080-774))/(${q2}-${q1})
+variable	nFe_3 equal (1.05*(1080-774))/(1.575-${q1})
+variable	nFe_3 equal (1.05*(1080-774))/(1.575-1.05)
+
+# Reset all Fe ions to Fe(II).
+set		group Fe type 1
+Setting atom values ...
+  774 settings made for type
+
+# Set a random subset to Fe ions to Fe(III) to assure charge neutrality.
+set		group Fe type/subset 2 ${nFe_3} ${rand}
+set		group Fe type/subset 2 612 ${rand}
+set		group Fe type/subset 2 612 855824
+Setting atom values ...
+  612 settings made for type/subset
+
+set		type 1 charge ${q1}
+set		type 1 charge 1.05
+Setting atom values ...
+  162 settings made for charge
+set		type 2 charge ${q2}
+set		type 2 charge 1.575
+Setting atom values ...
+  612 settings made for charge
+set		type 3 charge ${q3}
+set		type 3 charge -1.05
+Setting atom values ...
+  1080 settings made for charge
+
+reset_atom_ids
+Resetting atom IDs ...
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (../kspace.cpp:340)
+  G vector (1/distance) = 0.28989534
+  grid = 40 40 270
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00036955454
+  estimated relative force accuracy = 1.1129025e-06
+  using double precision KISS FFT
+  3d grid and FFT values/proc = 655473 432000
+  generated 6 of 6 mixed pair_coeff terms from arithmetic mixing rule
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0.5     
+  special bond factors coul:  0        0        0.8333333333333334
+     0 = max # of 1-2 neighbors
+     0 = max # of 1-3 neighbors
+     0 = max # of 1-4 neighbors
+     1 = max # of special neighbors
+  special bonds CPU = 0.000 seconds
+
+# Sanity check.
+variable	qtot equal charge(all)
+print		"total charge of system: ${qtot}"
+total charge of system: 2.16315854117966e-12
+
+write_data	b-001-scv-29L.data
+System init for write_data ...
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (../kspace.cpp:340)
+  G vector (1/distance) = 0.28989534
+  grid = 40 40 270
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.00036955454
+  estimated relative force accuracy = 1.1129025e-06
+  using double precision KISS FFT
+  3d grid and FFT values/proc = 655473 432000
+  generated 6 of 6 mixed pair_coeff terms from arithmetic mixing rule
+Total wall time: 0:00:00
