@@ -7,7 +7,7 @@ This repository contains scripts and data related to the slab section of [**Oxid
 [<img src="221008_111_tet1_figure/111-tet1.png" alt="Table of Contents Figure" width="55%">](https://pubs.acs.org/doi/full/10.1021/acs.jpclett.3c01290) 
 
 ## Overview  
-This repository provides computational workflows and analysis scripts used in the study of magnetite slabs through oxidation state swaps. The scripts support various tasks such as comparing different annealing schemes, oxidation state minimization of magnetite slabs, comparing linear and exponential annealing schemes, constrained oxidation state swaps, analyzing vacancy evolution in slabs, and modeling slabs with fixed bulk layers.
+This repository provides computational workflows and analysis scripts used in the study of magnetite slabs through oxidation state swaps. The scripts support various tasks such as comparing different annealing schemes, oxidation state minimization of 001-DBT, 111-tet1 and 001-SCV slabs, comparing linear and exponential annealing schemes, constrained oxidation state swaps, analyzing vacancy evolution in slabs, and modeling slabs with fixed bulk layers.
 
 ## Repository Structure  
 ```
@@ -26,7 +26,7 @@ magnetite_slab/
 │   ├── 1_linear/                                     # Linear temperature decay
 │   ├── 2_exp/                                        # Exponential temperature decay
 │   ├── 3_oct_constrained/                            # Constrained oxidation state swaps to Fe_oct
-│   ├── 4_trimeron_analysis/                          # Trimeron fingerprint analysis
+│   ├── 4_trimeron_analysis/                          # Trimeron analysis
 │   ├── 6_results/                                  
 │
 ├── 221008_111_tet1_figure/                           # Visualization and figure generation
