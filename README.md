@@ -4,7 +4,7 @@
 
 This repository contains scripts and data used in the slab section of the research paper [**Oxidation-State Dynamics and Emerging Patterns in Magnetite**](https://pubs.acs.org/doi/full/10.1021/acs.jpclett.3c01290)  
 
-[<img src="221008_111_tet1_figure/111-tet1.png" alt="Table of Contents Figure" width="55%">](https://pubs.acs.org/doi/full/10.1021/acs.jpclett.3c01290) 
+[<img src="221008_111_tet1_figure/111-tet1.png" alt="Table of Contents Figure" width="30%">](https://pubs.acs.org/doi/full/10.1021/acs.jpclett.3c01290) 
 
 ## Overview  
 This repository contains production and analysis scripts used in the investigation of magnetite slabs via oxidation state swaps. It includes scripts used in comparing different annealing schemes, oxidation state minimization of 001-DBT, 111-tet1 and 001-SCV slabs, comparing linear and exponential annealing schemes, constrained oxidation state swaps, analyzing vacancy evolution, and modeling slabs with fixed bulk layers.
